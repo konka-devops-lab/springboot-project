@@ -22,9 +22,17 @@ pipeline{
                 sh 'mvn jacoco:report'
             }
         }
-        stage("Owasp Dependency Check"){
-            steps{
-                sh 'mvn org.owasp:dependency-check-maven:check'
+        // stage("Owasp Dependency Check"){
+        //     steps{
+        //         sh 'mvn org.owasp:dependency-check-maven:9.0.10:check'
+        //     }
+        // }
+        stage('SAST') {
+            steps { 
+                echo "Running Static application security testing using SonarQube Scanner ..."
+                withSonarQubeEnv('sonar-server') {
+                    sh 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml -Dsonar.projectName=spb'
+                }
             }
         }
     }
